@@ -136,16 +136,15 @@ map<int, set<int>> agrupar_por_unidades(vector<int> s) {
 // Ejercicio 9
 vector<char> traducir(vector<pair<char, char>> tr, vector<char> str) {
     vector<char> res;
-    for (int i = 0; i < str.size(); ++i) {
-        res.push_back(str[i]);
+    map<char,char> mapita;
+    for(pair<char,char> p: tr){
+        mapita[p.first] = p.second;
     }
-    for(char c:res){
-        for (int i = 0; i < tr.size(); ++i) {
-            if(tr[i].first == c){
-                res.push_back(tr[i].second);
-            } else{
-                res.push_back(c);
-            }
+    for (int i = 0; i < str.size(); ++i) {
+        if(mapita.count(str[i]) == 1){
+            res.push_back(mapita[str[i]]);
+        } else{
+            res.push_back(str[i]);
         }
     }
     return res;
@@ -153,12 +152,43 @@ vector<char> traducir(vector<pair<char, char>> tr, vector<char> str) {
 
 // Ejercicio 10
 bool integrantes_repetidos(vector<Mail> s) {
-
-    return true;
+    bool res = false;
+    set<set<LU>> libretitas;
+    for(Mail m: s){
+        libretitas.insert(m.libretas());
+    }
+    vector<LU> listaGrande;
+    for (set<LU> l: libretitas) {
+        for(LU k: l){
+            listaGrande.push_back(k);
+        }
+    }
+    map<LU, int> mapita;
+    for (LU lu : listaGrande) {
+        if(mapita.count(lu) == 0){
+            mapita[lu] = 1;
+        }else{
+            res = true;
+        }
+    }
+    return res;
 }
 
 // Ejercicio 11
 map<set<LU>, Mail> entregas_finales(vector<Mail> s) {
-
-  return map<set<LU>, Mail>();
+    map<set<LU>, Mail> res;
+    set<set<LU>> grupos;
+    for (Mail m : s){
+        grupos.insert(m.libretas()); // creamos un conjunto con todos los grupos de la cadena de mails (grupo = cjto de LUs)
+    }
+    for(set<LU> grupo: grupos){
+        for(Mail m: s){
+            if (m.libretas() == grupo){
+                if(m.adjunto()){
+                    res[grupo] = m;
+                }
+            }
+        }
+    }
+  return res;
 }
